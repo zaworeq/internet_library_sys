@@ -39,3 +39,7 @@ def new_book(request):
 
     context = {'form': form}
     return render(request, 'new_book.html', context)
+
+
+def import_(request):
+    return render(request, 'import.html', {})
