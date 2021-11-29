@@ -1,0 +1,10 @@
+<h3>New Book</h3>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+
+<a href="/book_list">Book List</a><br>
+<a href="/ ">Home Page</a>

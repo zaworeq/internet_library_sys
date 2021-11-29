@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import ListView
+from django.http import HttpResponseRedirect
 
 from .models import Book
+from .forms import NewBookForm
 
 
 def home(request):
@@ -25,3 +27,15 @@ class BookList(ListView):
             return Book.objects.filter(publication_language__icontains=query)
         else:
             return Book.objects.all()
+
+
+def new_book(request):
+
+    form = NewBookForm()
+    if request.method == 'POST':
+        form = NewBookForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    context = {'form': form}
+    return render(request, 'new_book.html', context)
