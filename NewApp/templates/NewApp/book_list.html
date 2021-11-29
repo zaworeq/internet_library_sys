@@ -1,0 +1,24 @@
+<h1>Book List</h1>
+
+<table cellspacing="0" cellpadding="0" border="1" style="width: 100%;">
+    <tr>
+    <td><b>Tytuł</b></td>
+    <td><b>Autor</b></td>
+    <td><b>Data publikacji</b></td>
+    <td><b>ISBN</b></td>
+    <td><b>Ilość stron</b></td>
+    <td><b>Okładka</b></td>
+    <td><b>Język publikacji</b></td><br>
+    </tr>
+    {% for book in object_list%}
+    <tr>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.publication_date }}</td>
+        <td>{{ book.isbn_number }}</td>
+        <td>{{ book.page_number }}</td>
+        <td>{{ book.front_page_url }}</td>
+        <td>{{ book.publication_language }}</td><br>
+    </tr>
+    {% endfor %}
+</table>
