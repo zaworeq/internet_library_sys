@@ -1,9 +1,7 @@
 from django.contrib import admin
-from django.urls import path
-
-from NewApp.views import BookList
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('book_list/', BookList.as_view())
+    path('', include('NewApp.urls'))
 ]
