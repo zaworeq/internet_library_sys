@@ -1,10 +1,11 @@
 import datetime
+from dateutil.parser import parse
 import json
 
 from django.shortcuts import render
 from django.views.generic import ListView
-from django.http import HttpResponseRedirect
 import requests
+
 
 from .models import Book
 from .forms import NewBookForm, ImportForm
@@ -51,21 +52,31 @@ def import_(request):
     input_dict = response.json()
     for book in input_dict['items']:
         try:
-            b = Book(title=book['volumeInfo']['title'],
-                     author=book['volumeInfo']['authors'][0],
-                     publication_date=datetime.datetime.strptime(book['volumeInfo']['publishedDate'], '%Y-%m'),
-                     isbn_number=book['volumeInfo']['industryIdentifiers'][0]['identifier'],
-                     page_number=book['volumeInfo']['pageCount'],
-                     front_page_url=book['volumeInfo']['previewLink'],
-                     publication_language=book['volumeInfo']['language'])
-        except ValueError:
+            if (isinstance(book['volumeInfo']['industryIdentifiers'][0]['identifier'], int) == True):
+                b = Book(title=book['volumeInfo']['title'],
+                         author=book['volumeInfo']['authors'][0],
+                         publication_date=parse(book['volumeInfo']['publishedDate']).date(),
+                         isbn_number=book['volumeInfo']['industryIdentifiers'][0]['identifier'],
+                         page_number=book['volumeInfo']['pageCount'],
+                         front_page_url=book['volumeInfo']['previewLink'],
+                         publication_language=book['volumeInfo']['language'])
+            else:
+                isbn_str = str(book['volumeInfo']['industryIdentifiers'][0]['identifier'])
+                isbn = int(isbn_str[4:])
+                b = Book(title=book['volumeInfo']['title'],
+                         author=book['volumeInfo']['authors'][0],
+                         publication_date=parse(book['volumeInfo']['publishedDate']).date(),
+                         isbn_number=isbn,
+                         page_number=book['volumeInfo']['pageCount'],
+                         front_page_url=book['volumeInfo']['previewLink'],
+                         publication_language=book['volumeInfo']['language'])
+        except KeyError:
             isbn_str = str(book['volumeInfo']['industryIdentifiers'][0]['identifier'])
             isbn = int(isbn_str[4:])
             b = Book(title=book['volumeInfo']['title'],
                      author=book['volumeInfo']['authors'][0],
-                     publication_date=datetime.datetime.strptime(book['volumeInfo']['publishedDate'], '%Y'),
+                     publication_date=parse(book['volumeInfo']['publishedDate']).date(),
                      isbn_number=isbn,
-                     page_number=book['volumeInfo']['pageCount'],
                      front_page_url=book['volumeInfo']['previewLink'],
                      publication_language=book['volumeInfo']['language'])
 
