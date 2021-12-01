@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.shortcuts import render
@@ -44,19 +45,32 @@ def new_book(request):
     return render(request, 'new_book.html', context)
 
 
-def import_():
+def import_(request):
     api_url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
     response = requests.get(api_url)
     input_dict = response.json()
-    output_dict = [{k: v for k, v in input_dict.items() if k in ["title",
-                                                        "authors",
-                                                        "publishedDate",
-                                                        "identifier",
-                                                        "pageCount",
-                                                        "previewLink",
-                                                        "language"]
-                    } for x in input_dict]
+    for book in input_dict['items']:
+        try:
+            b = Book(title=book['volumeInfo']['title'],
+                     author=book['volumeInfo']['authors'][0],
+                     publication_date=datetime.datetime.strptime(book['volumeInfo']['publishedDate'], '%Y-%m'),
+                     isbn_number=book['volumeInfo']['industryIdentifiers'][0]['identifier'],
+                     page_number=book['volumeInfo']['pageCount'],
+                     front_page_url=book['volumeInfo']['previewLink'],
+                     publication_language=book['volumeInfo']['language'])
+        except ValueError:
+            isbn_str = str(book['volumeInfo']['industryIdentifiers'][0]['identifier'])
+            isbn = int(isbn_str[4:])
+            b = Book(title=book['volumeInfo']['title'],
+                     author=book['volumeInfo']['authors'][0],
+                     publication_date=datetime.datetime.strptime(book['volumeInfo']['publishedDate'], '%Y'),
+                     isbn_number=isbn,
+                     page_number=book['volumeInfo']['pageCount'],
+                     front_page_url=book['volumeInfo']['previewLink'],
+                     publication_language=book['volumeInfo']['language'])
 
-    print(output_dict)
+        b.save()
+
+        print(b)
     context = {}
-    # return render(request, 'import.html', context)
+    return render(request, 'import.html', context)
