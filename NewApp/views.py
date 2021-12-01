@@ -5,10 +5,13 @@ import json
 from django.shortcuts import render
 from django.views.generic import ListView
 import requests
+from rest_framework.generics import ListAPIView
+from rest_framework import filters
 
 
 from .models import Book
 from .forms import NewBookForm, ImportForm
+from .serializers import BookListSerializer
 
 
 def home(request):
@@ -85,3 +88,18 @@ def import_(request):
         print(b)
     context = {}
     return render(request, 'import.html', context)
+
+
+class BookListREST(ListAPIView):
+    search_fields = ['title',
+                     'author',
+                     'publication_date',
+                     'isbn_number',
+                     'page_number',
+                     'front_page_url',
+                     'publication_language']
+    filter_backends = (filters.SearchFilter,)
+    queryset = Book.objects.all()
+    serializer_class = BookListSerializer
+
+
