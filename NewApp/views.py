@@ -7,6 +7,7 @@ from django.views.generic import ListView
 import requests
 from rest_framework.generics import ListAPIView
 from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 from .models import Book
@@ -98,7 +99,13 @@ class BookListREST(ListAPIView):
                      'page_number',
                      'front_page_url',
                      'publication_language']
-    filter_backends = (filters.SearchFilter,)
+    filterset_fields = ['title',
+                        'author',
+                        'publication_date',
+                        'isbn_number',
+                        'page_number',
+                        'publication_language']
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
     queryset = Book.objects.all()
     serializer_class = BookListSerializer
 

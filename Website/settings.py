@@ -21,6 +21,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'rest_framework',
+    'django_filters',
     'NewApp.apps.NewappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
